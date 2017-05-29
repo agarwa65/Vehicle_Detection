@@ -1,4 +1,4 @@
-##Writeup Template
+## Writeup Template
 ---
 
 **Vehicle Detection and Tracking**
@@ -15,15 +15,15 @@ The goals / steps of this project are the following:
 [//]: # (Image References)
 [image1]: ./examples/car_not_car1.png
 [image2]: ./examples/HOG_example1.png
-[image3]: ./examples/sliding_windows.jpg
+[image3]: ./examples/sliding_window.png
 [image4]: ./examples/test1_cars.png
 [image5]: ./examples/test1_cars.png
-[image6]: ./examples/sliding_windows_heatmap.png
-[image7]: ./examples/output_bboxes.png
+[image6]: ./examples/sliding_windows_hm_test1.png
+[image7]: ./examples/sliding_windows_hm_test5.png
 [video1]: ./project_video_out.mp4
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/513/view) Points
-###Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
+### Here I will consider the rubric points individually and describe how I addressed each point in my implementation.  
 
 ---
 ### Writeup / README
@@ -53,7 +53,7 @@ I worked on various combinations of color spaces and parameters for HOG function
 
 I trained a linear SVM using the default settings, the code is located in cell 5 of the notebook.
 
-###Sliding Window Search
+### Sliding Window Search
 
 #### 1. Describe how (and identify where in your code) you implemented a sliding window search.  How did you decide what scales to search and how much to overlap windows?
 
@@ -65,9 +65,14 @@ The image below shows the range of search for every frame.
 
 #### 2. Show some examples of test images to demonstrate how your pipeline is working.  What did you do to optimize the performance of your classifier?
 
-Ultimately I searched on the scales array using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here are some example images from the test set provided:
+Ultimately I searched on the scales array using YCrCb 3-channel HOG features plus spatially binned color and histograms of color in the feature vector, which provided a nice result.  Here is an example image from the test set provided:
 
 ![alt text][image4]
+
+I tried various methods to do temporal filtering over some frames so as to track vehicles and then label those as cars. I created a deque for the heatmap count, that did not work very well for me. Then I tried changing the search radii around the heatmap based on the history of such heat maps over multiple frames. That worked good but was not able to detect cars once they moved away. I tried playing with the radii but that resulted in false positives.
+Lastly, I used two thresholds to filter out false positives over 10 frames. That seems to work the best with the given settings.
+
+
 ---
 
 ### Video Implementation
@@ -84,14 +89,11 @@ Here's an example result showing the heatmap from a series of frames of video, t
 
 ### Here are six frames and their corresponding heatmaps:
 
-![alt text][image5]
-
-### Here is the output of `scipy.ndimage.measurements.label()` on the integrated heatmap from all six frames:
 ![alt text][image6]
+
 
 ### Here the resulting bounding boxes are drawn onto the last frame in the series:
 ![alt text][image7]
-
 
 
 ---
